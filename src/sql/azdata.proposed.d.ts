@@ -559,7 +559,6 @@ declare module 'azdata' {
 		type?: ExtensionNodeType;
 	}
 
-<<<<<<< HEAD
 	export interface AccountDisplayInfo {
 		email?: string;
 		name?: string;
@@ -591,12 +590,14 @@ declare module 'azdata' {
 <<<<<<< HEAD
 =======
 
-=======
 	export interface RowDetailsOptions {
 		panelRows: number,
 		detailsHtml: boolean,
 		headerCssClass?: string
 	}
+<<<<<<< HEAD
 >>>>>>> a7439d2e3... recent PR comments
 >>>>>>> 08ffe5d409... recent PR comments
+=======
+>>>>>>> fc62dcbc5b... rebase fix
 }
