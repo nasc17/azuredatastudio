@@ -1319,6 +1319,13 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		this.setProperty('data', v);
 	}
 
+	public get dataObjects(): any[] {
+		return this.properties['dataObjects'];
+	}
+	public set dataObjects(v: any[]) {
+		this.setProperty('dataObjects', v);
+	}
+
 	public get columns(): string[] | azdata.TableColumn[] {
 		return this.properties['columns'];
 	}
@@ -1384,7 +1391,7 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		this.setProperty('updateCells', v);
 	}
 
-	public appendData(v: any[][]): void {
+	public appendData(v: any[]): void {
 		this.doAction(ModelViewAction.AppendData, v);
 	}
 
