@@ -393,6 +393,186 @@
         ]
       },
       {
+        "name": "sql-azure-setup",
+        "displayName": "%azure-sqldb-display-name%",
+        "description": "%azure-sqldb-description%",
+        "platforms": "*",
+        "icon": {
+          "light": "./images/sql_server_on_azure.svg",
+          "dark": "./images/sql_server_on_azure.svg"
+        },
+        "options": [
+          {
+            "name": "resource-type",
+            "displayName": "%resource-type-display-name%",
+            "values": [
+              {
+                "name": "single-database",
+                "displayName": "%sql-azure-single-database-display-name%"
+              },
+              {
+                "name": "elastic-pool",
+                "displayName": "%sql-azure-elastic-pool-display-name%"
+              },
+              {
+                "name": "database-server",
+                "displayName": "%sql-azure-database-server-display-name%"
+              }
+            ]
+          }
+        ],
+        "providers": [
+          {
+            "notebookWizard": {
+              "notebook": "./notebooks/azuredb/create-sqldb.ipynb",
+              "runNotebook": false,
+              "codeCellInsertionPosition": 4,
+              "taskName": "%azure-sqldb-deploy-dialog-title%",
+              "actionText": "%azure-sqlvm-deploy-dialog-action-text%",
+              "title": "%azure-sqldb-deploy-dialog-title%",
+              "name": "azure.sqldb.new.wizard",
+              "generateSummaryPage": true,
+              "pages": [
+                {
+                  "title": "azure-sqlvm-azure-account-page-label",
+                  "sections": [
+                    {
+                      "title": "",
+                      "collapsible": false,
+                      "fields": [
+                        {
+                          "subscriptionVariableName": "AZDATA_NB_VAR_AZURE_SQLDB_NB_VAR_SUBSCRIPTION",
+                          "resourceGroupVariableName": "AZDATA_NB_VAR_AZURE_SQLDB_NB_VAR_RESOURCE_GROUP_NAME",
+                          "type": "azure_account",
+                          "required": true
+                        },
+                        {
+                          "type": "azure_locations",
+                          "label": "%azure-sqlvm-azure-location-label%",
+                          "defaultValue": "eastus",
+                          "required": true,
+                          "locationVariableName": "AZDATA_NB_VAR_AZURE_SQLDB_LOCATION",
+                          "displayLocationVariableName": "AZURE_SQLDB_DISPLAY_LOCATION",
+                          "locations": [
+                            "eastus",
+                            "eastus2",
+                            "northcentralus",
+                            "southcentralus",
+                            "westcentralus",
+                            "westus",
+                            "canadacentral",
+                            "canadaeast",
+                            "brazilsouth",
+                            "westus2",
+                            "southeastasia",
+                            "westeurope"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "title": "%azure-sqldb-server-information-page-label%",
+                  "sections": [
+                    {
+                      "title": "",
+                      "collapsible": false,
+                      "fields": [
+                        {
+                          "label": "%azure-sqldb-server-name-label%",
+                          "variableName": "AZDATA_NB_VAR_AZURE_SQLDB_SERVER_NAME",
+                          "type": "text",
+                          "textValidationRequired": true,
+                          "textValidationRegex": "^[a-z0-9]([-a-z0-9_-]{0,13}[a-z0-9])?$",
+                          "textValidationDescription": "%azure-sqlvm-vm-azure-resource-name-validation-description%",
+                          "defaultValue": "",
+                          "required": true
+                        },
+                        {
+                          "label": "%azure-sqldb-server-admin-username-label%",
+                          "variableName": "AZDATA_NB_VAR_AZURE_SQLDB_SERVER_USERNAME",
+                          "type": "text",
+                          "textValidationRequired": true,
+                          "textValidationRegex": "^[a-z0-9]([-a-z0-9_-]{0,13}[a-z0-9])?$",
+                          "textValidationDescription": "%azure-sqlvm-vm-azure-resource-name-validation-description%",
+                          "defaultValue": "",
+                          "required": true
+                        },
+                        {
+                          "label": "%azure-sqldb-server-admin-password-label%",
+                          "variableName": "AZDATA_NB_VAR_AZURE_SQLDB_SERVER_PASS",
+                          "type": "password",
+                          "defaultValue": "",
+                          "required": true
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "title": "%azure-sqldb-database-information-page-label%",
+                  "sections": [
+                    {
+                      "title": "",
+                      "collapsible": false,
+                      "fields": [
+                        {
+                          "label": "%azure-sqldb-database-name-label%",
+                          "variableName": "AZDATA_NB_VAR_AZURE_SQLDB_DATABASE_NAME",
+                          "type": "text",
+                          "textValidationRequired": true,
+                          "textValidationRegex": "^[a-z0-9]([-a-z0-9_-]{0,13}[a-z0-9])?$",
+                          "textValidationDescription": "%azure-sqlvm-vm-azure-resource-name-validation-description%",
+                          "defaultValue": "",
+                          "required": true
+                        }
+                      ]
+                    },
+                    {
+                      "title": "",
+                      "collapsible": false,
+                      "fields": [
+                        {
+                          "label": "%azure-sqldb-start-ip-label%",
+                          "variableName": "AZDATA_NB_VAR_AZURE_SQLDB_IP_START",
+                          "type": "text",
+                          "defaultValue": "0.0.0.0",
+                          "required": true
+                        },
+                        {
+                          "label": "azure-sqldb-end-ip-label",
+                          "variableName": "AZDATA_NB_VAR_AZURE_SQLDB_IP_END",
+                          "type": "text",
+                          "defaultValue": "0.0.0.0",
+                          "required": true
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "requiredTools": [
+              {
+                "name": "azure-cli"
+              }
+            ],
+            "when": "resource-type=single-database"
+          },
+          {
+            "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLElasticDatabasePool",
+            "requiredTools": [],
+            "when": "resource-type=elastic-pool"
+          },
+          {
+            "webPageUrl": "https://portal.azure.com/#create/Microsoft.SQLServer",
+            "requiredTools": [],
+            "when": "resource-type=database-server"
+          }
+        ]
+      },
+      {
         "name": "azure-sql-vm",
         "displayName": "%azure-sqlvm-display-name%",
         "description": "%azure-sqlvm-description%",
@@ -403,7 +583,7 @@
         },
         "providers": [
           {
-            "azureSQLVMWizard":{
+            "azureSQLVMWizard": {
               "notebook": "./notebooks/azurevm/create-sqlvm.ipynb"
             },
             "requiredTools": [
