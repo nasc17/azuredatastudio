@@ -504,7 +504,7 @@
                           "variableName": "AZDATA_NB_VAR_AZURE_SQLDB_SERVER_PASS",
                           "type": "password",
                           "defaultValue": "",
-                          "required": true
+                          "required": false
                         }
                       ]
                     }
