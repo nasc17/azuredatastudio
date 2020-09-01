@@ -6,11 +6,11 @@
 import * as azdata from 'azdata';
 import * as constants from '../constants';
 import { WizardPageBase } from '../../wizardPageBase';
-import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
+import { DeployAzureSQLDBWizard } from '../deployAzureSQLDBWizard';
 import { apiService } from '../../../services/apiService';
 import { azureResource } from 'azureResource';
 
-export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
+export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 	// <- means depends on
 	//dropdown for azure accounts
 	private _azureAccountsDropdown!: azdata.DropDownComponent;
@@ -33,7 +33,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 	private _accountsMap!: Map<string, azdata.Account>;
 	private _subscriptionsMap!: Map<string, azureResource.AzureResourceSubscription>;
 
-	constructor(wizard: DeployAzureSQLVMWizard) {
+	constructor(wizard: DeployAzureSQLDBWizard) {
 		super(
 			constants.AzureSettingsPageTitle,
 			constants.AzureSettingsPageDescription,

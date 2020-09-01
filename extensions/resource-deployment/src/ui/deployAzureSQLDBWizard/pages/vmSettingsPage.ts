@@ -6,9 +6,9 @@
 import * as azdata from 'azdata';
 import * as constants from '../constants';
 import { WizardPageBase } from '../../wizardPageBase';
-import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
+import { DeployAzureSQLDBWizard } from '../deployAzureSQLDBWizard';
 
-export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
+export class VmSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 
 	// textbox for vm name
 	private _vmNameTextBox!: azdata.InputBoxComponent;
@@ -40,7 +40,7 @@ export class VmSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
 
 	private _form!: azdata.FormContainer;
 
-	constructor(wizard: DeployAzureSQLVMWizard) {
+	constructor(wizard: DeployAzureSQLDBWizard) {
 		super(
 			constants.VmSettingsPageTitle,
 			constants.VmSettingsPageDescription,

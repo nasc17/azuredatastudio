@@ -6,9 +6,9 @@
 import * as azdata from 'azdata';
 import * as constants from '../constants';
 import { WizardPageBase } from '../../wizardPageBase';
-import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
+import { DeployAzureSQLDBWizard } from '../deployAzureSQLDBWizard';
 
-export class SqlServerSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
+export class SqlServerSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 
 	private sqlConnectivityDropdown!: azdata.DropDownComponent;
 	private portTextBox!: azdata.InputBoxComponent;
@@ -19,7 +19,7 @@ export class SqlServerSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard
 
 	private _form!: azdata.FormContainer;
 
-	constructor(wizard: DeployAzureSQLVMWizard) {
+	constructor(wizard: DeployAzureSQLDBWizard) {
 		super(
 			constants.SqlServerSettingsPageTitle,
 			'',

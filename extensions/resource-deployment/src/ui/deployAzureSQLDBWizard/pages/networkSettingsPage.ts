@@ -5,10 +5,10 @@
 
 import * as azdata from 'azdata';
 import { WizardPageBase } from '../../wizardPageBase';
-import { DeployAzureSQLVMWizard } from '../deployAzureSQLVMWizard';
+import { DeployAzureSQLDBWizard } from '../deployAzureSQLDBWizard';
 import * as constants from '../constants';
 
-export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> {
+export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 
 	// virtual network components
 	private _existingVirtualNetworkCheckbox!: azdata.CheckBoxComponent;
@@ -32,7 +32,7 @@ export class NetworkSettingsPage extends WizardPageBase<DeployAzureSQLVMWizard> 
 
 	private _form!: azdata.FormContainer;
 
-	constructor(wizard: DeployAzureSQLVMWizard) {
+	constructor(wizard: DeployAzureSQLDBWizard) {
 		super(
 			constants.NetworkSettingsPageTitle,
 			constants.NetworkSettingsPageDescription,
