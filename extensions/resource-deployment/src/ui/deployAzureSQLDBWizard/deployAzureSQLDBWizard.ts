@@ -48,8 +48,8 @@ export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, W
 		throw new Error('Method not implemented.');
 	}
 
-	private getPages(): WizardPageBase<DeployAzureSQLVMWizard>[] {
-		const pages: WizardPageBase<DeployAzureSQLVMWizard>[] = [];
+	private getPages(): WizardPageBase<DeployAzureSQLDBWizard>[] {
+		const pages: WizardPageBase<DeployAzureSQLDBWizard>[] = [];
 		pages.push(new AzureSettingsPage(this));
 		pages.push(new VmSettingsPage(this));
 		pages.push(new NetworkSettingsPage(this));
