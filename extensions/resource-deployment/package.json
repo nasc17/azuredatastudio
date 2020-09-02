@@ -434,7 +434,7 @@
               "generateSummaryPage": true,
               "pages": [
                 {
-                  "title": "azure-sqlvm-azure-account-page-label",
+                  "title": "%azure-sqlvm-azure-account-page-label%",
                   "sections": [
                     {
                       "title": "",
