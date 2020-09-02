@@ -14,13 +14,10 @@ export class DeployAzureSQLDBWizardModel extends Model {
 	public azureResouceGroup!: string;
 	public azureRegion!: string;
 
-	public vmName!: string;
-	public vmUsername!: string;
-	public vmPassword!: string;
-	public vmImage!: string;
-	public vmImageSKU!: string;
-	public vmImageVersion!: string;
-	public vmSize!: string;
+	public serverName!: string;
+	public serverUsername!: string;
+	public serverPassword!: string;
+
 
 	public virtualNetworkName!: string;
 	public newVirtualNetwork!: boolean;
@@ -46,15 +43,11 @@ export class DeployAzureSQLDBWizardModel extends Model {
 		const statements: string[] = [];
 
 		try {
-			statements.push(`azure_sqlvm_nb_var_subscription = '${this.azureSubscription}'`);
-			statements.push(`azure_sqlvm_nb_var_resource_group_name = '${this.azureResouceGroup}'`);
-			statements.push(`azure_sqlvm_location = '${this.azureRegion}'`);
-			statements.push(`azure_sqlvm_vmname = '${this.vmName}'`);
-			statements.push(`azure_sqlvm_image = '${this.vmImage}'`);
-			statements.push(`azure_sqlvm_image_sku = '${this.vmImageSKU}'`);
-			statements.push(`azure_sqlvm_image_version = '${this.vmImageVersion}'`);
-			statements.push(`azure_sqlvm_vmsize = '${this.vmSize}'`);
-			statements.push(`azure_sqlvm_username = '${this.vmUsername}'`);
+			statements.push(`azure_sqldb_nb_var_subscription = '${this.azureSubscription}'`);
+			statements.push(`azure_sqldb_nb_var_resource_group_name = '${this.azureResouceGroup}'`);
+			statements.push(`azure_sqldb_location = '${this.azureRegion}'`);
+			statements.push(`azure_sqldb_server_name = '${this.serverName}'`);
+			statements.push(`azure_sqldb_server_username = '${this.serverUsername}'`);
 		}
 		catch (error) {
 

@@ -501,7 +501,7 @@
                         },
                         {
                           "label": "%azure-sqldb-server-admin-password-label%",
-                          "variableName": "AZDATA_NB_VAR_AZURE_SQLDB_SERVER_PASS",
+                          "variableName": "AZDATA_NB_VAR_AZURE_SQLDB_PASSWORD",
                           "type": "password",
                           "defaultValue": "",
                           "required": false
