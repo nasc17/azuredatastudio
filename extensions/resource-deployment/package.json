@@ -541,7 +541,7 @@
                           "required": true
                         },
                         {
-                          "label": "azure-sqldb-end-ip-label",
+                          "label": "%azure-sqldb-end-ip-label%",
                           "variableName": "AZDATA_NB_VAR_AZURE_SQLDB_IP_END",
                           "type": "text",
                           "defaultValue": "0.0.0.0",
