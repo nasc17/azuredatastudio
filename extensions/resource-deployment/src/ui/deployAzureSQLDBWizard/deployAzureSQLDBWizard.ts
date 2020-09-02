@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import * as constants from './constants';
 import { INotebookService } from '../../services/notebookService';
 import { IToolsService } from '../../services/toolsService';
@@ -89,5 +90,65 @@ export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, W
 		};
 		const response = await axios.get(url, config);
 		return response;
+	}
+
+	public createFormRowComponent(view: azdata.ModelView, title: string, description: string, component: azdata.Component, required: boolean): azdata.FlexContainer {
+
+		component.updateProperties({
+			required: false,
+			width: '480px'
+		});
+
+		const labelText = view.modelBuilder.text()
+			.withProperties<azdata.TextComponentProperties>(
+				{
+					value: title,
+					width: '250px',
+					description: description,
+					requiredIndicator: required,
+				})
+			.component();
+
+		labelText.updateCssStyles({
+			'font-weight': '400',
+			'font-size': '13px',
+		});
+
+		const flexContainer = view.modelBuilder.flexContainer()
+			.withLayout(
+				{
+					flexFlow: 'row',
+					alignItems: 'center',
+				})
+			.withItems(
+				[labelText, component],
+				{
+					CSSStyles: { 'margin-right': '5px' }
+				})
+			.component();
+		return flexContainer;
+	}
+
+	public changeRowDisplay(container: azdata.FlexContainer, display: ('none' | 'block')) {
+		container.items.map((component) => {
+			component.display = display;
+			component.updateProperties({
+				required: display === 'block'
+			});
+		});
+	}
+
+	public addDropdownValues(component: azdata.DropDownComponent, values: azdata.CategoryValue[], width?: number) {
+		component.updateProperties({
+			values: values,
+			width: '480px'
+		});
+	}
+
+	public showErrorMessage(message: string) {
+		this.wizardObject.message = {
+			text: message,
+			level: azdata.window.MessageLevel.Error
+		};
 	}
 }
