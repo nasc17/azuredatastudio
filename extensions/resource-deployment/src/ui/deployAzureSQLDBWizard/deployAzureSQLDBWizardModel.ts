@@ -20,15 +20,15 @@ export class DeployAzureSQLDBWizardModel extends Model {
 
 
 	public virtualNetworkName!: string;
-	public newVirtualNetwork!: boolean;
+	public existingVirtualNetwork!: 'True' | 'False';
 	public subnetName!: string;
-	public publicIPName!: string;
-	public newPublicIPName!: boolean;
+	public publicIpName!: string;
+	public existingPublicIp!: 'True' | 'False';
 	public allowRDP!: 'True' | 'False';
 
 	public sqlConnectivityType!: string;
 	public port!: number;
-	public enableSqlAuthentication!: boolean;
+	public enableSqlAuthentication!: 'True' | 'False';
 	public sqlAuthenticationUsername!: string;
 	public sqlAuthenticationPassword!: string;
 	public sqlOptimizationDropdown!: string;
@@ -48,47 +48,26 @@ export class DeployAzureSQLDBWizardModel extends Model {
 			statements.push(`azure_sqldb_location = '${this.azureRegion}'`);
 			statements.push(`azure_sqldb_server_name = '${this.serverName}'`);
 			statements.push(`azure_sqldb_server_username = '${this.serverUsername}'`);
+			// statements.push(`azure_sqldb_virtnet = '${this.virtualNetworkName}'`);
+			// statements.push(`azure_sqldb_virtnetold = ${this.existingVirtualNetwork}`);
+			// statements.push(`azure_sqldb_subnet = '${this.subnetName}'`);
+			// statements.push(`azure_sqldb_publicip = '${this.publicIpName}'`);
+			// statements.push(`azure_sqldb_publicipold = ${this.existingPublicIp}`);
+			// statements.push(`azure_sqldb_allow_rdp = ${this.allowRDP}`);
+			// statements.push(`azure_sqldb_sqlConnectivityType = '${this.sqlConnectivityType}'`);
+			// statements.push(`azure_sqldb_port = '${this.port}'`);
+			statements.push(`azure_sqldb_enableSqlAuthentication = ${this.enableSqlAuthentication}`);
+			statements.push(`azure_sqldb_sqlAuthenticationUsername = '${this.sqlAuthenticationUsername}'`);
+			// statements.push(`azure_sqldb_sqlOptimization = '${this.sqlOptimizationDropdown}'`);
+			statements.push(`if "AZDATA_NB_VAR_azure_sqldb_PASSWORD" in os.environ:
+			azure_sqldb_password = os.environ["AZDATA_NB_VAR_azure_sqldb_PASSWORD"]`);
+			statements.push(`if "AZDATA_NB_VAR_azure_sqldb_SQL_PASSWORD" in os.environ:
+			azure_sqldb_sqlAuthenticationPassword = os.environ["AZDATA_NB_VAR_azure_sqldb_SQL_PASSWORD"]`);
+
 		}
 		catch (error) {
 
 		}
 		return statements.map(line => line + EOL);
-		// const profile = this.createTargetProfile();
-		// const statements: string[] = [];
-		// if (this.deploymentTarget === BdcDeploymentType.NewAKS) {
-		// 	statements.push(`azure_subscription_id = '${this.getStringValue(VariableNames.SubscriptionId_VariableName, '')}'`);
-		// 	statements.push(`azure_region = '${this.getStringValue(VariableNames.Location_VariableName)}'`);
-		// 	statements.push(`azure_resource_group = '${this.getStringValue(VariableNames.ResourceGroup_VariableName)}'`);
-		// 	statements.push(`azure_vm_size = '${this.getStringValue(VariableNames.VMSize_VariableName)}'`);
-		// 	statements.push(`azure_vm_count = '${this.getStringValue(VariableNames.VMCount_VariableName)}'`);
-		// 	statements.push(`aks_cluster_name = '${this.getStringValue(VariableNames.AksName_VariableName)}'`);
-		// } else if (this.deploymentTarget === BdcDeploymentType.ExistingAKS
-		// 	|| this.deploymentTarget === BdcDeploymentType.ExistingKubeAdm
-		// 	|| this.deploymentTarget === BdcDeploymentType.ExistingARO
-		// 	|| this.deploymentTarget === BdcDeploymentType.ExistingOpenShift) {
-		// 	statements.push(`mssql_kube_config_path = '${this.escapeForNotebookCodeCell(this.getStringValue(VariableNames.KubeConfigPath_VariableName)!)}'`);
-		// 	statements.push(`mssql_cluster_context = '${this.getStringValue(VariableNames.ClusterContext_VariableName)}'`);
-		// 	statements.push('os.environ["KUBECONFIG"] = mssql_kube_config_path');
-		// }
-		// if (this.authenticationMode === AuthenticationMode.ActiveDirectory) {
-		// 	statements.push(`mssql_domain_service_account_username = '${this.escapeForNotebookCodeCell(this.getStringValue(VariableNames.DomainServiceAccountUserName_VariableName)!)}'`);
-		// }
-		// statements.push(`mssql_cluster_name = '${this.getStringValue(VariableNames.ClusterName_VariableName)}'`);
-		// statements.push(`mssql_username = '${this.getStringValue(VariableNames.AdminUserName_VariableName)}'`);
-		// statements.push(`mssql_auth_mode = '${this.authenticationMode}'`);
-		// statements.push(`bdc_json = '${profile.getBdcJson(false)}'`);
-		// statements.push(`control_json = '${profile.getControlJson(false)}'`);
-		// if (this.getStringValue(VariableNames.DockerUsername_VariableName) && this.getStringValue(VariableNames.DockerPassword_VariableName)) {
-		// 	statements.push(`os.environ["DOCKER_USERNAME"] = '${this.getStringValue(VariableNames.DockerUsername_VariableName)}'`);
-		// 	statements.push(`os.environ["DOCKER_PASSWORD"] = os.environ["${VariableNames.DockerPassword_VariableName}"]`);
-		// }
-		// const kubeCtlEnvVarName: string = getRuntimeBinaryPathEnvironmentVariableName(KubeCtlToolName);
-		// const env: NodeJS.ProcessEnv = {};
-		// setEnvironmentVariablesForInstallPaths(tools, env);
-		// statements.push(`os.environ["${kubeCtlEnvVarName}"] = "${this.escapeForNotebookCodeCell(env[kubeCtlEnvVarName]!)}"`);
-		// statements.push(`os.environ["PATH"] = os.environ["PATH"] + "${delimiter}" + "${this.escapeForNotebookCodeCell(env[ToolsInstallPath]!)}"`);
-		// statements.push(`print('Variables have been set successfully.')`);
-		// return statements.map(line => line + EOL);
-		// return [];
 	}
 }

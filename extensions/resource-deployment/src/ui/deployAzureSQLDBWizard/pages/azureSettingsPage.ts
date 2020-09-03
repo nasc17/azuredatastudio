@@ -29,6 +29,10 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 	private _resourceGroupDropdown!: azdata.DropDownComponent;
 	private _resourceGroupLoader!: azdata.LoadingComponent;
 
+	//dropdown for SQL servers <- resource dropdown
+	private _serverGroupDropdown!: azdata.DropDownComponent;
+	private _serverGroupLoader!: azdata.LoadingComponent;
+
 	//dropdown for azure regions <- subscription dropdown
 	private _azureRegionsDropdown!: azdata.DropDownComponent;
 	private _azureRegionsLoader!: azdata.LoadingComponent;
@@ -245,6 +249,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 				values: []
 			});
 			this._resourceGroupLoader.loading = false;
+			//await this.populateServerDropdown();
 			return;
 		}
 		let currentSubscription = this._subscriptionsMap.get(currentSubscriptionValue.name);

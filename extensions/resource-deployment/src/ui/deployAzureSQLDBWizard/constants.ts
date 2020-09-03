@@ -6,6 +6,8 @@
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
+export const standardWidth: string = '480px';
+
 // Deploy Azure SQL DB wizard constants
 export const WizardTitle = localize('deployAzureSQLDB.NewSQLDBTitle', "Deploy Azure SQL DB");
 export const WizardDoneButtonLabel = localize('deployAzureSQLDB.ScriptToNotebook', "Script to Notebook");
