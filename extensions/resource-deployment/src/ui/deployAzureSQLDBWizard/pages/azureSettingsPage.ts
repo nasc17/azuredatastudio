@@ -177,8 +177,9 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 				azdata.AzureResource.ResourceManagement
 			);
 
-			this.populateResourceGroupDropdown();
-			this.populateAzureRegionsDropdown();
+			this.populateServerGroupDropdown();
+			// this.populateResourceGroupDropdown();
+			// this.populateAzureRegionsDropdown();
 		});
 	}
 
@@ -199,8 +200,9 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 				values: []
 			});
 			this._azureSubscriptionLoader.loading = false;
-			await this.populateResourceGroupDropdown();
-			await this.populateAzureRegionsDropdown();
+			await this.populateServerGroupDropdown();
+			//			await this.populateResourceGroupDropdown();
+			//			await this.populateAzureRegionsDropdown();
 			return;
 		}
 		subscriptions.sort((a, b) => a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase()));
@@ -225,8 +227,9 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 			azdata.AzureResource.ResourceManagement
 		);
 		this._azureSubscriptionLoader.loading = false;
-		await this.populateResourceGroupDropdown();
-		await this.populateAzureRegionsDropdown();
+		await this.populateServerGroupDropdown();
+		// await this.populateResourceGroupDropdown();
+		// await this.populateAzureRegionsDropdown();
 	}
 
 	private async createResourceDropdown(view: azdata.ModelView) {
@@ -244,24 +247,28 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 			required: true
 		}).component();
 		this._serverGroupLoader = view.modelBuilder.loadingComponent().withItem(this._serverGroupDropdown).component();
-		this._resourceGroupDropdown.onValueChanged(async (value) => {
+		this._serverGroupDropdown.onValueChanged(async (value) => {
 			this.wizard.model.azureResouceGroup = value.selected;
+			this.populateResourceGroupDropdown();
+			this.populateAzureRegionsDropdown();
 		});
 	}
 
 	private async populateServerGroupDropdown() {
 		this._serverGroupLoader.loading = true;
 		let subService = await apiService.getAzurecoreApi();
-		let currentResourceValue = this._resourceGroupDropdown.value as azdata.CategoryValue;
-		if (currentResourceValue === undefined || currentResourceValue.displayName === '') {
+		let currentSubscriptionValue = this._azureSubscriptionsDropdown.value as azdata.CategoryValue;
+		if (currentSubscriptionValue === undefined || currentSubscriptionValue.displayName === '') {
 
 			this._serverGroupDropdown.updateProperties({
 				values: []
 			});
 			this._serverGroupLoader.loading = false;
+			await this.populateResourceGroupDropdown();
+			await this.populateAzureRegionsDropdown();
 			return;
 		}
-		let currentSubscription = this._subscriptionsMap.get(currentResourceValue.name);
+		let currentSubscription = this._subscriptionsMap.get(currentSubscriptionValue.name);
 		let resourceGroups = (await subService.getResourceGroups(this.wizard.model.azureAccount, currentSubscription, true)).resourceGroups;
 		if (resourceGroups === undefined || resourceGroups.length === 0) {
 			this._resourceGroupLoader.loading = false;
@@ -280,8 +287,10 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 				};
 			})
 		});
-		this.wizard.model.azureResouceGroup = (this._resourceGroupDropdown.value as azdata.CategoryValue).name;
-		this._resourceGroupLoader.loading = false;
+		this.wizard.model.azureResouceGroup = (this._serverGroupDropdown.value as azdata.CategoryValue).name;
+		this._serverGroupLoader.loading = false;
+		await this.populateResourceGroupDropdown();
+		await this.populateAzureRegionsDropdown();
 	}
 
 
@@ -296,7 +305,6 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 				values: []
 			});
 			this._resourceGroupLoader.loading = false;
-			//await this.populateServerDropdown();
 			return;
 		}
 		let currentSubscription = this._subscriptionsMap.get(currentSubscriptionValue.name);
