@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import * as constants from './constants';
 import { INotebookService } from '../../services/notebookService';
 import { IToolsService } from '../../services/toolsService';
@@ -47,7 +48,6 @@ export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, W
 	}
 
 	protected onCancel(): void {
-		throw new Error('Method not implemented.');
 	}
 
 	private getPages(): WizardPageBase<DeployAzureSQLDBWizard>[] {
@@ -63,22 +63,17 @@ export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, W
 	private async scriptToNotebook(): Promise<void> {
 		this.setEnvironmentVariables(process.env);
 		const variableValueStatements = this.model.getCodeCellContentForNotebook();
-		const insertionPosition = 5; // Cell number 5 is the position where the python variable setting statements need to be inserted in this.wizardInfo.notebook.
+		const insertionPosition = 3; // Cell number 5 is the position where the python variable setting statements need to be inserted in this.wizardInfo.notebook.
 		try {
 			await this.notebookService.launchNotebookWithEdits(this.wizardInfo.notebook, variableValueStatements, insertionPosition);
 		} catch (error) {
-			// vscode.window.showErrorMessage(getErrorMessage(error));
+			vscode.window.showErrorMessage(error);
 		}
 	}
 
 	private setEnvironmentVariables(env: NodeJS.ProcessEnv): void {
 		env['AZDATA_NB_VAR_AZURE_SQLDB_PASSWORD'] = this.model.serverPassword;
 		env['AZDATA_NB_VAR_AZURE_SQLDB_SQL_PASSWORD'] = this.model.sqlAuthenticationPassword;
-
-		// env[VariableNames.DockerPassword_VariableName] = this.model.getStringValue(VariableNames.DockerPassword_VariableName);
-		// if (this.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
-		// 	env[VariableNames.DomainServiceAccountPassword_VariableName] = this.model.getStringValue(VariableNames.DomainServiceAccountPassword_VariableName);
-		// }
 	}
 
 	public async getRequest(url: string): Promise<any> {
@@ -97,7 +92,7 @@ export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, W
 	public createFormRowComponent(view: azdata.ModelView, title: string, description: string, component: azdata.Component, required: boolean): azdata.FlexContainer {
 
 		component.updateProperties({
-			required: false,
+			required: required,
 			width: '480px'
 		});
 
@@ -163,5 +158,42 @@ export class DeployAzureSQLDBWizard extends WizardBase<DeployAzureSQLDBWizard, W
 			text: message,
 			level: azdata.window.MessageLevel.Error
 		};
+	}
+
+	public validatePassword(password: string): string {
+		/**
+		 * 1. Password length should be between 12 and 123.
+		 * 2. Password must have 3 of the following: 1 lower case character, 1 upper case character, 1 number, and 1 special character.
+		 */
+
+		let errorMessage = '';
+
+		if (password.length < 12 || password.length > 123) {
+			errorMessage += 'Password must be between 12 and 123 characters long.\n';
+		}
+
+		let charTypeCounter = 0;
+
+		if (new RegExp('.*[a-z].*').test(password)) {
+			charTypeCounter++;
+		}
+
+		if (new RegExp('.*[A-Z].*').test(password)) {
+			charTypeCounter++;
+		}
+
+		if (new RegExp('.*[0-9].*').test(password)) {
+			charTypeCounter++;
+		}
+
+		if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/.test(password)) {
+			charTypeCounter++;
+		}
+
+		if (charTypeCounter < 3) {
+			errorMessage += 'Password must have 3 of the following: 1 lower case character, 1 upper case character, 1 number, and 1 special character.\n';
+		}
+
+		return errorMessage;
 	}
 }

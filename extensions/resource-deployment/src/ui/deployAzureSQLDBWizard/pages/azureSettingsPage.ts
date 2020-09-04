@@ -239,6 +239,53 @@ export class AzureSettingsPage extends WizardPageBase<DeployAzureSQLDBWizard> {
 		});
 	}
 
+	private async createServerDropdown(view: azdata.ModelView) {
+		this._serverGroupDropdown = view.modelBuilder.dropDown().withProperties({
+			required: true
+		}).component();
+		this._serverGroupLoader = view.modelBuilder.loadingComponent().withItem(this._serverGroupDropdown).component();
+		this._resourceGroupDropdown.onValueChanged(async (value) => {
+			this.wizard.model.azureResouceGroup = value.selected;
+		});
+	}
+
+	private async populateServerGroupDropdown() {
+		this._serverGroupLoader.loading = true;
+		let subService = await apiService.getAzurecoreApi();
+		let currentResourceValue = this._resourceGroupDropdown.value as azdata.CategoryValue;
+		if (currentResourceValue === undefined || currentResourceValue.displayName === '') {
+
+			this._serverGroupDropdown.updateProperties({
+				values: []
+			});
+			this._serverGroupLoader.loading = false;
+			return;
+		}
+		let currentSubscription = this._subscriptionsMap.get(currentResourceValue.name);
+		let resourceGroups = (await subService.getResourceGroups(this.wizard.model.azureAccount, currentSubscription, true)).resourceGroups;
+		if (resourceGroups === undefined || resourceGroups.length === 0) {
+			this._resourceGroupLoader.loading = false;
+			this._resourceGroupDropdown.updateProperties({
+				values: []
+			});
+			return;
+		}
+
+		resourceGroups.sort((a, b) => a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase()));
+		this._resourceGroupDropdown.updateProperties({
+			values: resourceGroups.map((resourceGroup) => {
+				return {
+					displayName: resourceGroup.name,
+					name: resourceGroup.name
+				};
+			})
+		});
+		this.wizard.model.azureResouceGroup = (this._resourceGroupDropdown.value as azdata.CategoryValue).name;
+		this._resourceGroupLoader.loading = false;
+	}
+
+
+
 	private async populateResourceGroupDropdown() {
 		this._resourceGroupLoader.loading = true;
 		let subService = await apiService.getAzurecoreApi();

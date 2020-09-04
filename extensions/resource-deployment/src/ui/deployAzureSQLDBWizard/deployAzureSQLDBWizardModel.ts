@@ -52,7 +52,7 @@ export class DeployAzureSQLDBWizardModel extends Model {
 			// statements.push(`azure_sqldb_virtnetold = ${this.existingVirtualNetwork}`);
 			// statements.push(`azure_sqldb_subnet = '${this.subnetName}'`);
 			// statements.push(`azure_sqldb_publicip = '${this.publicIpName}'`);
-			// statements.push(`azure_sqldb_publicipold = ${this.existingPublicIp}`);
+			// statements.push(`azure_sqlvm_existingPublicIp = ${this.existingPublicIp}`);
 			// statements.push(`azure_sqldb_allow_rdp = ${this.allowRDP}`);
 			// statements.push(`azure_sqldb_sqlConnectivityType = '${this.sqlConnectivityType}'`);
 			// statements.push(`azure_sqldb_port = '${this.port}'`);

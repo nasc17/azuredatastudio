@@ -28,9 +28,6 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 			this._form = view.modelBuilder.formContainer()
 				.withFormItems(
 					[
-						{
-							component: this.createSummaryRow(view, 'Azure accounts', '')
-						}
 					],
 					{
 						horizontal: false,
@@ -54,12 +51,4 @@ export class AzureSQLDBSummaryPage extends WizardPageBase<DeployAzureSQLDBWizard
 			return true;
 		});
 	}
-
-	private createSummaryRow(view: azdata.ModelView, title: string, value: string) {
-		let text = view.modelBuilder.text().withProperties(<azdata.InputBoxProperties>{
-			value: value
-		}).component();
-		return this.wizard.createFormRowComponent(view, title, '', text, false);
-	}
-
 }
