@@ -172,6 +172,10 @@
           "dark": "resources/dark/add_to_server_list_inverse.svg",
           "light": "resources/light/add_to_server_list.svg"
         }
+      },
+      {
+        "command": "azure.manageAzureResources",
+        "title": "%azure.manageAzureResources.title%"
       }
     ],
     "dataExplorer": {

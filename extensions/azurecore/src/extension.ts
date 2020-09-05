@@ -43,6 +43,7 @@ import * as loc from './localizedConstants';
 import * as constants from './constants';
 import { AzureResourceGroupService } from './azureResource/providers/resourceGroup/resourceGroupService';
 import { Logger } from './utils/Logger';
+import { TokenCredentials } from '@azure/ms-rest-js';
 
 let extensionContext: vscode.ExtensionContext;
 
@@ -87,6 +88,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	pushDisposable(vscode.window.registerTreeDataProvider('azureResourceExplorer_dialog', azureResourceTree));
 	pushDisposable(vscode.workspace.onDidChangeConfiguration(e => onDidChangeConfiguration(e), this));
 	registerAzureResourceCommands(appContext, azureResourceTree);
+
+	vscode.commands.registerCommand('azure.manageAzureResources', async () => {
+		await vscode.commands.executeCommand('resourceViewer.openResourceViewer', constants.dataGridProviderId);
+	});
 
 	return {
 		getSubscriptions(account?: azdata.Account, ignoreErrors?: boolean): Thenable<azurecore.GetSubscriptionsResult> { return azureResourceUtils.getSubscriptions(appContext, account, ignoreErrors); },
