@@ -105,6 +105,7 @@ export class BookModel {
 		}
 		let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
 		let collapsedItems = notebookConfig[constants.collapseBookItems];
+		await notebookConfig.update(constants.collapseBookItems, collapsedItems, vscode.ConfigurationTarget.Workspace);
 		let collapsibleState = vscode.TreeItemCollapsibleState.Expanded;
 		if (collapsedItems) {
 			collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
