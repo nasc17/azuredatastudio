@@ -466,7 +466,7 @@ export interface ICellModel {
 	setFuture(future: FutureInternal): void;
 	setStdInHandler(handler: nb.MessageHandler<nb.IStdinMessage>): void;
 	runCell(notificationService?: INotificationService, connectionManagementService?: IConnectionManagementService): Promise<boolean>;
-	setOverrideLanguage(language: string);
+	setOverrideLanguage(language: string): void;
 	equals(cellModel: ICellModel): boolean;
 	toJSON(): nb.ICellContents;
 	loaded: boolean;

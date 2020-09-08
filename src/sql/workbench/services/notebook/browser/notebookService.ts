@@ -66,13 +66,13 @@ export interface INotebookService {
 
 	registerNavigationProvider(provider: INavigationProvider): void;
 
-	getNavigationProvider(notebookUri: URI): INavigationProvider;
+	getNavigationProvider(): INavigationProvider | undefined;
 
 	getSupportedFileExtensions(): string[];
 
-	getProvidersForFileType(fileType: string): string[];
+	getProvidersForFileType(fileType: string): string[] | undefined;
 
-	getStandardKernelsForProvider(provider: string): azdata.nb.IStandardKernel[];
+	getStandardKernelsForProvider(provider: string): azdata.nb.IStandardKernel[] | undefined;
 
 	/**
 	 * Initializes and returns a Notebook manager that can handle all important calls to open, display, and

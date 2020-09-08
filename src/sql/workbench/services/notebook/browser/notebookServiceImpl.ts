@@ -76,7 +76,7 @@ export class ProviderDescriptor {
 		return this._instanceReady.promise;
 	}
 
-	public get instance(): INotebookProvider {
+	public get instance(): INotebookProvider | undefined {
 		return this._instance;
 	}
 	public set instance(value: INotebookProvider) {
@@ -94,7 +94,7 @@ export class NotebookService extends Disposable implements INotebookService {
 
 	private _providersMemento: Memento;
 	private _trustedNotebooksMemento: Memento;
-	private _mimeRegistry: RenderMimeRegistry;
+	private _mimeRegistry: RenderMimeRegistry = undefined;
 	private _providers: Map<string, ProviderDescriptor> = new Map();
 	private _navigationProviders: Map<string, INavigationProvider> = new Map();
 	private _managersMap: Map<string, INotebookManager[]> = new Map();
@@ -223,7 +223,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		this._navigationProviders.set(provider.providerId, provider);
 	}
 
-	getNavigationProvider(): INavigationProvider {
+	getNavigationProvider(): INavigationProvider | undefined {
 		let provider;
 		if (this._navigationProviders.size > 0) {
 			const providerName = this.contextKeyService.getContextKeyValue(unsavedBooksContextKey) ? NavigationProviders.ProvidedBooksNavigator : NavigationProviders.NotebooksNavigator;
@@ -277,14 +277,14 @@ export class NotebookService extends Disposable implements INotebookService {
 		return Array.from(this._fileToProviders.keys());
 	}
 
-	getProvidersForFileType(fileType: string): string[] {
+	getProvidersForFileType(fileType: string): string[] | undefined {
 		fileType = fileType.toUpperCase();
 		let providers = this._fileToProviders.get(fileType);
 
 		return providers ? providers.map(provider => provider.provider) : undefined;
 	}
 
-	getStandardKernelsForProvider(provider: string): nb.IStandardKernel[] {
+	getStandardKernelsForProvider(provider: string): nb.IStandardKernel[] | undefined {
 		return this._providerToStandardKernels.get(provider.toUpperCase());
 	}
 
@@ -304,7 +304,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			throw new Error(NotebookUriNotDefined);
 		}
 		let uriString = uri.toString();
-		let managers: INotebookManager[] = this._managersMap.get(uriString);
+		let managers: INotebookManager[] | undefined = this._managersMap.get(uriString);
 		// If manager already exists for a given notebook, return it
 		if (managers) {
 			let index = managers.findIndex(m => m.providerId === providerId);
@@ -365,7 +365,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	listNotebookEditors(): INotebookEditor[] {
-		let editors = [];
+		let editors: INotebookEditor[] = [];
 		this._editors.forEach(e => editors.push(e));
 		return editors;
 	}
@@ -385,20 +385,22 @@ export class NotebookService extends Disposable implements INotebookService {
 			this._managersMap.delete(uriString);
 			managers.forEach(m => {
 				let provider = this._providers.get(m.providerId);
-				provider.instance.handleNotebookClosed(notebookUri);
+				if (provider) {
+					provider.instance.handleNotebookClosed(notebookUri);
+				}
 			});
 		}
 	}
 
 	private async doWithProvider<T>(providerId: string, op: (provider: INotebookProvider) => Thenable<T>): Promise<T> {
 		// Make sure the provider exists before attempting to retrieve accounts
-		let provider: INotebookProvider = await this.getProviderInstance(providerId);
+		let provider: INotebookProvider | undefined = await this.getProviderInstance(providerId);
 		return op(provider);
 	}
 
-	private async getProviderInstance(providerId: string, timeout?: number): Promise<INotebookProvider> {
+	private async getProviderInstance(providerId: string, timeout?: number): Promise<INotebookProvider | undefined> {
 		let providerDescriptor = this._providers.get(providerId);
-		let instance: INotebookProvider;
+		let instance: INotebookProvider | undefined;
 
 		// Try get from actual provider, waiting on its registration
 		if (providerDescriptor) {
@@ -413,6 +415,8 @@ export class NotebookService extends Disposable implements INotebookService {
 			} else {
 				instance = providerDescriptor.instance;
 			}
+		} else {
+			instance = undefined;
 		}
 
 		// Fall back to default (SQL) if this failed

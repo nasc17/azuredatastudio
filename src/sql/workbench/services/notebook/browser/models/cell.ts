@@ -268,7 +268,7 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._cellGuid;
 	}
 
-	public setOverrideLanguage(newLanguage: string) {
+	public setOverrideLanguage(newLanguage: string): void {
 		this._language = newLanguage;
 	}
 

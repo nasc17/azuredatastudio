@@ -520,7 +520,7 @@ export interface IActiveIndentGuideInfo {
  * @internal
  */
 export interface ITextSnapshot {
-	read(): string | null;
+	read(): string | null | undefined;
 }
 
 /**

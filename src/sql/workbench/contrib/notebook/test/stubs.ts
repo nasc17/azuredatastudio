@@ -229,7 +229,7 @@ export class NotebookServiceStub implements INotebookService {
 	registerNavigationProvider(provider: INavigationProvider): void {
 		throw new Error('Method not implemented.');
 	}
-	getNavigationProvider(notebookUri: URI): INavigationProvider {
+	getNavigationProvider(): INavigationProvider | undefined {
 		throw new Error('Method not implemented.');
 	}
 	getSupportedFileExtensions(): string[] {

@@ -158,16 +158,16 @@ export class SqlSession implements nb.ISession {
 }
 
 class SqlKernel extends Disposable implements nb.IKernel {
-	private _queryRunner: QueryRunner;
-	private _currentConnection: IConnectionProfile;
-	private _currentConnectionProfile: ConnectionProfile;
+	private _queryRunner: QueryRunner | undefined = undefined;
+	private _currentConnection: IConnectionProfile | undefined = undefined;
+	private _currentConnectionProfile: ConnectionProfile | undefined = undefined;
 	static kernelId: number = 0;
 
-	private _id: string;
-	private _future: SQLFuture;
+	private _id: string | undefined = undefined;
+	private _future: SQLFuture | undefined = undefined;
 	private _executionCount: number = 0;
 	private _magicToExecutorMap = new Map<string, ExternalScriptMagic>();
-	private _connectionPath: string;
+	private _connectionPath: string | undefined = undefined;
 
 	constructor(private _path: string,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -284,8 +284,10 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		} else if (this._currentConnection && this._currentConnectionProfile) {
 			this._queryRunner = this._instantiationService.createInstance(QueryRunner, this._connectionPath);
 			this._connectionManagementService.connect(this._currentConnectionProfile, this._connectionPath).then((result) => {
-				this.addQueryEventListeners(this._queryRunner);
-				this._queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
+				if (this._queryRunner) {
+					this.addQueryEventListeners(this._queryRunner);
+					this._queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
+				}
 			}).catch(err => onUnexpectedError(err));
 		} else {
 			canRun = false;
@@ -331,8 +333,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 
 	interrupt(): Thenable<void> {
 		// TODO: figure out what to do with the QueryCancelResult
-		return this._queryRunner.cancelQuery().then((cancelResult) => {
-		});
+		return this._queryRunner ? this._queryRunner.cancelQuery().then((cancelResult) => { }) : Promise.resolve();
 	}
 
 	private addQueryEventListeners(queryRunner: QueryRunner): void {
@@ -378,9 +379,9 @@ class SqlKernel extends Disposable implements nb.IKernel {
 }
 
 export class SQLFuture extends Disposable implements FutureInternal {
-	private _msg: nb.IMessage = undefined;
-	private ioHandler: nb.MessageHandler<nb.IIOPubMessage>;
-	private doneHandler: nb.MessageHandler<nb.IShellMessage>;
+	private _msg: nb.IMessage | undefined = undefined;
+	private ioHandler: nb.MessageHandler<nb.IIOPubMessage> | undefined = undefined;
+	private doneHandler: nb.MessageHandler<nb.IShellMessage> | undefined = undefined;
 	private doneDeferred = new Deferred<nb.IShellMessage>();
 	private configuredMaxRows: number = MAX_ROWS;
 	private _outputAddedPromises: Promise<void>[] = [];
@@ -388,8 +389,8 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private _errorOccurred: boolean = false;
 	private _stopOnError: boolean = true;
 	constructor(
-		private _queryRunner: QueryRunner,
-		private _executionCount: number | undefined,
+		private _queryRunner: QueryRunner | undefined,
+		private _executionCount: number | undefined | null,
 		configurationService: IConfigurationService,
 		private readonly logService: ILogService
 	) {
@@ -405,14 +406,14 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	}
 
 	get inProgress(): boolean {
-		return this._queryRunner && !this._queryRunner.hasCompleted;
+		return this._queryRunner ? !this._queryRunner.hasCompleted : false;
 	}
 	set inProgress(val: boolean) {
 		if (this._queryRunner && !val) {
 			this._queryRunner.cancelQuery().catch(err => onUnexpectedError(err));
 		}
 	}
-	get msg(): nb.IMessage {
+	get msg(): nb.IMessage | undefined {
 		return this._msg;
 	}
 
@@ -435,7 +436,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			},
 			header: undefined,
 			metadata: {},
-			parent_header: undefined
+			parent_header: {}
 		};
 		this._msg = msg;
 		if (this.doneHandler) {
@@ -458,7 +459,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 
 	public handleMessage(msg: IResultMessage | string): void {
 		if (this.ioHandler) {
-			let message;
+			let message: nb.IIOPubMessage | undefined;
 			if (typeof msg === 'string') {
 				message = this.convertToDisplayMessage(msg);
 			}
@@ -469,7 +470,9 @@ export class SQLFuture extends Disposable implements FutureInternal {
 					message = this.convertToDisplayMessage(msg);
 				}
 			}
-			this.ioHandler.handle(message);
+			if (message) {
+				this.ioHandler.handle(message);
+			}
 		}
 	}
 
@@ -505,7 +508,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private async getAllQueryRows(rowCount: number, resultSet: ResultSetSummary): Promise<void> {
 		let deferred: Deferred<void> = new Deferred<void>();
 		if (rowCount > 0) {
-			this._queryRunner.getQueryRows(0, rowCount, resultSet.batchId, resultSet.id).then((result) => {
+			this._queryRunner?.getQueryRows(0, rowCount, resultSet.batchId, resultSet.id).then((result) => {
 				this._querySubsetResultMap.set(resultSet.id, result);
 				deferred.resolve();
 			}, (err) => {
@@ -522,7 +525,9 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private sendResultSetAsIOPub(resultSet: ResultSetSummary): void {
 		if (this._querySubsetResultMap && this._querySubsetResultMap.get(resultSet.id)) {
 			let subsetResult = this._querySubsetResultMap.get(resultSet.id);
-			this.sendIOPubMessage(subsetResult, resultSet);
+			if (subsetResult) {
+				this.sendIOPubMessage(subsetResult, resultSet);
+			}
 		}
 	}
 
@@ -531,7 +536,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			channel: 'iopub',
 			type: 'iopub',
 			header: <nb.IHeader>{
-				msg_id: undefined,
+				msg_id: '',
 				msg_type: 'execute_result'
 			},
 			content: <nb.IExecuteResult>{
@@ -543,10 +548,10 @@ export class SQLFuture extends Disposable implements FutureInternal {
 					'text/html': this.convertToHtmlTable(resultSet.columnInfo, subsetResult)
 				}
 			},
-			metadata: undefined,
-			parent_header: undefined
+			metadata: {},
+			parent_header: {}
 		};
-		this.ioHandler.handle(msg);
+		this.ioHandler?.handle(msg);
 		this._querySubsetResultMap.delete(resultSet.id);
 	}
 
@@ -606,14 +611,14 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		return htmlStringArr;
 	}
 
-	private convertToDisplayMessage(msg: IResultMessage | string): nb.IIOPubMessage {
+	private convertToDisplayMessage(msg: IResultMessage | string): nb.IIOPubMessage | undefined {
 		if (msg) {
 			let msgData = typeof msg === 'string' ? msg : msg.message;
 			return {
 				channel: 'iopub',
 				type: 'iopub',
 				header: <nb.IHeader>{
-					msg_id: undefined,
+					msg_id: '',
 					msg_type: 'display_data'
 				},
 				content: <nb.IDisplayData>{
@@ -621,14 +626,14 @@ export class SQLFuture extends Disposable implements FutureInternal {
 					data: { 'text/html': msgData },
 					metadata: {}
 				},
-				metadata: undefined,
-				parent_header: undefined
+				metadata: {},
+				parent_header: {}
 			};
 		}
 		return undefined;
 	}
 
-	private convertToError(msg: IResultMessage | string): nb.IIOPubMessage {
+	private convertToError(msg: IResultMessage | string): nb.IIOPubMessage | undefined {
 		this._errorOccurred = true;
 
 		if (msg) {
@@ -637,7 +642,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 				channel: 'iopub',
 				type: 'iopub',
 				header: <nb.IHeader>{
-					msg_id: undefined,
+					msg_id: '',
 					msg_type: 'error'
 				},
 				content: <nb.IErrorResult>{
@@ -646,8 +651,8 @@ export class SQLFuture extends Disposable implements FutureInternal {
 					ename: '',
 					traceback: []
 				},
-				metadata: undefined,
-				parent_header: undefined
+				metadata: {},
+				parent_header: {}
 			};
 		}
 		return undefined;
@@ -660,7 +665,7 @@ export interface IDataResource {
 }
 
 export interface IDataResourceFields {
-	fields: IDataResourceSchema[];
+	fields: IDataResourceSchema[] | undefined;
 }
 
 export interface IDataResourceSchema {

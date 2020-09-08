@@ -41,7 +41,7 @@ export namespace IRenderMime {
 		/**
 		 * Theme service used to react to theme change events
 		 */
-		readonly themeService: IThemeService;
+		readonly themeService: IThemeService | undefined;
 	}
 
 	/**
