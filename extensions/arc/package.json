@@ -699,7 +699,7 @@
               "name": "arc.postgres.new.dialog",
               "tabs": [
                 {
-                  "title": "",
+                  "title": "Basic Settings",
                   "sections": [
                     {
                       "title": "%arc.postgres.settings.section.title%",
@@ -753,7 +753,14 @@
                         }
 
                       ]
-                    },
+                    }
+
+
+                  ]
+                },
+                {
+                  "title": "Storage Settings",
+                  "sections": [
                     {
                       "title": "%arc.postgres.settings.storage.title%",
                       "fields": [
@@ -803,7 +810,12 @@
                           "min": 1
                         }
                       ]
-                    },
+                    }
+                  ]
+                },
+                {
+                  "title": "Resource Settings",
+                  "sections": [
                     {
                       "title": "%arc.postgres.settings.resource.title%",
                       "fields": [
